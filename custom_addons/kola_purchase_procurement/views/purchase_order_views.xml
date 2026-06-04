@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_rfq_bid_list" model="ir.ui.view">
+        <field name="name">purchase.rfq.bid.list</field>
+        <field name="model">purchase.rfq.bid</field>
+        <field name="arch" type="xml">
+            <list string="Supplier Bids">
+                <field name="name"/>
+                <field name="order_id"/>
+                <field name="vendor_id"/>
+                <field name="bid_date"/>
+                <field name="validity_date"/>
+                <field name="amount_total"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_purchase_rfq_bid_form" model="ir.ui.view">
+        <field name="name">purchase.rfq.bid.form</field>
+        <field name="model">purchase.rfq.bid</field>
+        <field name="arch" type="xml">
+            <form string="Supplier Bid">
+                <header>
+                    <button name="action_copy_rfq_lines" type="object" string="Copy RFQ Lines" invisible="state != 'draft'"/>
+                    <button name="action_submit" type="object" string="Submit Bid" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_select_winner" type="object" string="Select Winner" class="oe_highlight" invisible="state not in ('draft', 'submitted')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,won"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="order_id" readonly="state != 'draft'"/>
+                            <field name="vendor_id" readonly="state != 'draft'"/>
+                            <field name="currency_id" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="bid_date"/>
+                            <field name="validity_date"/>
+                            <field name="delivery_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bid Lines" name="bid_lines">
+                            <field name="line_ids" readonly="state in ('won', 'lost')">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_subtotal"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_total"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_form_inherit_kola_procurement" model="ir.ui.view">
+        <field name="name">purchase.order.form.kola.procurement</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='button_confirm'][@id='draft_confirm']" position="before">
+                <button name="action_create_po_from_winner"
+                        type="object"
+                        string="Create PO from Winner"
+                        class="oe_highlight"
+                        invisible="state not in ('draft', 'sent') or not winning_bid_id"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="vendor_ids"
+                       widget="many2many_tags"
+                       placeholder="Select invited vendors"
+                       readonly="state in ['cancel', 'purchase']"/>
+                <field name="winning_bid_id" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="purchase_request_id"/>
+            </xpath>
+            <xpath expr="//notebook/page[@name='products']" position="after">
+                <page string="Supplier Bids" name="supplier_bids">
+                    <group>
+                        <button name="action_create_bid"
+                                type="object"
+                                string="Create Supplier Bid"
+                                class="btn-primary"
+                                invisible="state not in ('draft', 'sent')"/>
+                        <field name="bid_count" invisible="1"/>
+                    </group>
+                    <field name="bid_ids" context="{'default_order_id': id, 'default_currency_id': currency_id, 'default_company_id': company_id}">
+                        <list>
+                            <field name="name"/>
+                            <field name="vendor_id"/>
+                            <field name="bid_date"/>
+                            <field name="validity_date"/>
+                            <field name="amount_total"/>
+                            <field name="state" widget="badge"/>
+                            <button name="action_select_winner"
+                                    type="object"
+                                    string="Select Winner"
+                                    invisible="state in ('won', 'lost')"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_filter_inherit_kola_procurement" model="ir.ui.view">
+        <field name="name">purchase.order.search.kola.procurement</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="vendor_ids"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

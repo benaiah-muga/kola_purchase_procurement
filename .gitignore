@@ -1,0 +1,12 @@
+# Local Odoo runtime and downloaded platform files
+odoo-19.0/
+venv/
+config/
+*.log
+*.pyc
+__pycache__/
+docs/
+
+# Keep the assignment module and documentation tracked
+!custom_addons/
+!custom_addons/kola_purchase_procurement/
