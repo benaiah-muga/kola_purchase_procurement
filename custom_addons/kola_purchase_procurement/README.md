@@ -173,7 +173,8 @@ Implementation files:
 
 5. Click **Submit** → Status changes to "Submitted"
 
-![Purchase Request Draft](screenshots/purchase%20request.png)
+<img width="1250" height="1010" alt="purchase request" src="https://github.com/user-attachments/assets/91f0c7d3-0129-441f-97e4-1696adbec382" />
+
 
 ### Step 4.2: Approve Request (as Procurement Manager)
 
@@ -181,7 +182,8 @@ Implementation files:
 2. Click **Approve** → Status changes to "Approved"
 3. **Create RFQ** button becomes visible
 
-![After PR Approval](screenshots/After%20PR%20Approval.png)
+<img width="1250" height="1010" alt="After PR Approval" src="https://github.com/user-attachments/assets/7321e185-b1e6-4310-8ffd-b986fc9be506" />
+
 
 ### Step 4.3: Generate RFQ from Request
 
@@ -207,13 +209,15 @@ Implementation files:
    - **Primary Vendor** (partner_id): Tech Supplies Ltd (first suggested vendor)
    - **Origin** field shows: PR/00003 (linked request)
 
-![RFQ Created from Request - Assigned to Multiple Vendors](screenshots/createdrfq_from%20Request_assignedtomultiplevendors.png)
+<img width="1412" height="1010" alt="createdrfq_from Request_assignedtomultiplevendors" src="https://github.com/user-attachments/assets/f1512fa3-9e43-435f-bc75-d1bec829b1cd" />
+
 
 ### Step 1.2: RFQ Sent to Multiple Vendors via Email
 
 Odoo automatically sends the RFQ to all assigned vendors via email.
 
-![RFQs Sent to Multiple Vendors via Email](screenshots/RFQS%20sent%20to%20multiple%20vendors%20via%20email.png)
+<img width="1412" height="1010" alt="createdrfq_from Request_assignedtomultiplevendors" src="https://github.com/user-attachments/assets/3bbc13cd-d22c-4c1f-b57c-f8b043c948db" />
+
 
 ---
 
@@ -244,7 +248,8 @@ Odoo automatically sends the RFQ to all assigned vendors via email.
 
 7. Click **Submit Bid** → Status: "Submitted"
 
-![Bid Creation](screenshots/bidcreation.png)
+<img width="1075" height="1010" alt="bidcreation" src="https://github.com/user-attachments/assets/49f509ff-9bb6-43a7-925e-5d8250eb41b3" />
+
 
 ### Step 2.2: Create Bid for Global Electronics Inc
 
@@ -280,7 +285,8 @@ From **RFQ/00001**, go to **Supplier Bids** tab. View all 3 bids with states:
 - Global Electronics Inc: **Draft** - UGX 15,555,000
 - Office Essentials Co: **Submitted** - UGX 16,140,000
 
-![Bid List with Ability to Select a Winner](screenshots/bidlistwithability%20toselect%20a%20winner.png)
+<img width="1075" height="1010" alt="bidlistwithability toselect a winner" src="https://github.com/user-attachments/assets/e408863a-8c21-4454-8422-e2a91ef6ccac" />
+
 
 ---
 
@@ -307,7 +313,8 @@ Open **RFQ/00001** → **Supplier Bids** tab. Review bid totals:
 3. Tech Supplies bid status changes to: **Won**
 4. Other bids status change to: **Lost**
 
-![After Selecting the Winning Bid](screenshots/After%20selecting%20the%20winning%20bid.png)
+<img width="1306" height="1010" alt="After selecting the winning bid" src="https://github.com/user-attachments/assets/7f88ecca-18e3-4e32-a54b-e71a06bb46fa" />
+
 
 ### Step 3.3: Create Purchase Order
 
@@ -329,7 +336,8 @@ Open the newly created Purchase Order. Verify:
 - Total matches selected bid: **UGX 14,496,000**
 - Origin links back to RFQ and Purchase Request
 
-![Purchase Order Created](screenshots/purchase_order.png)
+<img width="859" height="495" alt="purchase_order" src="https://github.com/user-attachments/assets/1fcdf692-8bb3-4a9a-bd02-eeabb5f1bb7b" />
+
 
 ---
 
