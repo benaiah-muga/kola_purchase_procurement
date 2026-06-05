@@ -123,6 +123,237 @@ Implementation files:
 - `data/purchase_request_sequence.xml`
 - `security/ir.model.access.csv`
 
+---
+
+# Demo Walkthrough
+
+## Setup: Sample Data
+
+### Vendors (Suppliers)
+
+| Vendor Name | Email | Location |
+|-------------|-------|----------|
+| Tech Supplies Ltd | sales@techsupplies.ug | Kampala |
+| Global Electronics Inc | orders@globalelec.ug | Jinja |
+| Office Essentials Co | sales@officeessentials.ug | Entebbe |
+| Premium Hardware Suppliers | info@premiumhw.ug | Nairobi |
+
+### Products (Purchase Items)
+
+| Product | List Price (UGX) | Cost Price (UGX) |
+|---------|------------------|------------------|
+| Laptop Computer - 15" Business Pro | 4,500,000 | 3,600,000 |
+| Ergonomic Office Chair | 850,000 | 600,000 |
+| Wireless Mouse - Ergonomic | 85,000 | 55,000 |
+| USB-C Docking Station | 680,000 | 450,000 |
+| External Monitor - 27" 4K | 2,200,000 | 1,600,000 |
+| Mechanical Keyboard - RGB | 380,000 | 250,000 |
+
+---
+
+## Feature 4: Employee Purchase Request (First Step)
+
+**Scenario:** John Ssentamu from IT Department needs office equipment.
+
+### Step 4.1: Create Purchase Request
+
+1. Go to **Purchase > Orders > Purchase Requests**
+2. Click **Create**
+3. Fill in:
+   - **Employee:** John Ssentamu
+   - **Needed Date:** 2026-06-20
+   - **Suggested Vendors:** Tech Supplies Ltd, Global Electronics Inc, Office Essentials Co
+4. Add **Request Lines** (Products tab):
+
+| Product | Description | Qty | Est. Unit Price (UGX) |
+|---------|-------------|-----|----------------------|
+| Laptop Computer - 15" Business Pro | Laptop | 3 | 4,500,000 |
+| Office Chair | Ergonomic Chair | 3 | 850,000 |
+| Wireless Mouse | Ergonomic Mouse | 3 | 85,000 |
+
+5. Click **Submit** → Status changes to "Submitted"
+
+![Purchase Request Draft](screenshots/purchase%20request.png)
+
+### Step 4.2: Approve Request (as Procurement Manager)
+
+1. Open the submitted request PR/00001
+2. Click **Approve** → Status changes to "Approved"
+3. **Create RFQ** button becomes visible
+
+![After PR Approval](screenshots/After%20PR%20Approval.png)
+
+### Step 4.3: Generate RFQ from Request
+
+1. With approved request open, click **Create RFQ**
+2. System automatically:
+   - Creates RFQ with vendor_ids pre-populated from suggested vendors
+   - Links RFQ back to the purchase request (purchase_request_id field)
+   - Creates RFQ lines from request product lines
+3. Click **Edit** to verify vendor assignments
+
+---
+
+## Feature 1: Assign One RFQ To Several Vendors
+
+**Scenario:** Procurement prepared RFQ for IT equipment, inviting 3 vendors to quote.
+
+### Step 1.1: View RFQ with Multiple Vendors
+
+1. Go to **Purchase > Orders > Purchase Orders**
+2. Open **RFQ/00001** (created from PR/00003)
+3. In the form, verify:
+   - **Assigned Vendors** field shows: Tech Supplies Ltd, Global Electronics Inc, Office Essentials Co
+   - **Primary Vendor** (partner_id): Tech Supplies Ltd (first suggested vendor)
+   - **Origin** field shows: PR/00003 (linked request)
+
+![RFQ Created from Request - Assigned to Multiple Vendors](screenshots/createdrfq_from%20Request_assignedtomultiplevendors.png)
+
+### Step 1.2: RFQ Sent to Multiple Vendors via Email
+
+Odoo automatically sends the RFQ to all assigned vendors via email.
+
+![RFQs Sent to Multiple Vendors via Email](screenshots/RFQS%20sent%20to%20multiple%20vendors%20via%20email.png)
+
+---
+
+## Feature 2: Receive Bids From Suppliers
+
+**Scenario:** Each vendor submits a bid with their quoted prices.
+
+### Step 2.1: Create Bid for Tech Supplies Ltd
+
+1. Open **RFQ/00001**
+2. Go to **Supplier Bids** tab
+3. Click **Create Supplier Bid**
+4. Form opens:
+   - **RFQ:** RFQ/00001 (pre-filled)
+   - **Vendor:** Tech Supplies Ltd
+   - **Bid Date:** 2026-06-05
+   - **Valid Until:** 2026-06-12
+   - **Promised Delivery:** 2026-06-18
+5. Click **Copy RFQ Lines** → System populates bid lines
+6. Edit prices (Tech Supplies offers competitive rates):
+
+| Product | Qty | Unit Price (UGX) | Subtotal |
+|---------|-----|------------------|----------|
+| Laptop | 3 | 4,200,000 | 12,600,000 |
+| Office Chair | 3 | 580,000 | 1,740,000 |
+| Wireless Mouse | 3 | 52,000 | 156,000 |
+| **Total** | | | **14,496,000** |
+
+7. Click **Submit Bid** → Status: "Submitted"
+
+![Bid Creation](screenshots/bidcreation.png)
+
+### Step 2.2: Create Bid for Global Electronics Inc
+
+Repeat steps above with vendor: Global Electronics Inc
+
+| Product | Qty | Unit Price (UGX) | Subtotal |
+|---------|-----|------------------|----------|
+| Laptop | 3 | 4,400,000 | 13,200,000 |
+| Office Chair | 3 | 720,000 | 2,160,000 |
+| Wireless Mouse | 3 | 65,000 | 195,000 |
+| **Total** | | | **15,555,000** |
+
+Keep in **Draft** for now.
+
+### Step 2.3: Create Bid for Office Essentials Co
+
+Vendor: Office Essentials Co
+
+| Product | Qty | Unit Price (UGX) | Subtotal |
+|---------|-----|------------------|----------|
+| Laptop | 3 | 4,500,000 | 13,500,000 |
+| Office Chair | 3 | 800,000 | 2,400,000 |
+| Wireless Mouse | 3 | 80,000 | 240,000 |
+| **Total** | | | **16,140,000** |
+
+Click **Submit Bid** → Status: "Submitted"
+
+### Step 2.4: View All Bids
+
+From **RFQ/00001**, go to **Supplier Bids** tab. View all 3 bids with states:
+
+- Tech Supplies Ltd: **Submitted** - UGX 14,496,000
+- Global Electronics Inc: **Draft** - UGX 15,555,000
+- Office Essentials Co: **Submitted** - UGX 16,140,000
+
+![Bid List with Ability to Select a Winner](screenshots/bidlistwithability%20toselect%20a%20winner.png)
+
+---
+
+## Feature 3: Select Winning Bidder
+
+**Scenario:** Procurement reviews bids and selects Tech Supplies Ltd (lowest price).
+
+### Step 3.1: Compare Bids
+
+Open **RFQ/00001** → **Supplier Bids** tab. Review bid totals:
+
+- Tech Supplies: UGX 14,496,000 (lowest)
+- Global Electronics: UGX 15,555,000
+- Office Essentials: UGX 16,140,000 (highest)
+
+### Step 3.2: Select Winner
+
+1. Click **Select Winner** on Tech Supplies Ltd bid row
+2. System:
+   - Updates RFQ **partner_id** to Tech Supplies Ltd
+   - Sets **winning_bid_id** to this bid
+   - Updates RFQ line prices from winning bid
+   - Marks other bids as "Lost"
+3. Tech Supplies bid status changes to: **Won**
+4. Other bids status change to: **Lost**
+
+![After Selecting the Winning Bid](screenshots/After%20selecting%20the%20winning%20bid.png)
+
+### Step 3.3: Create Purchase Order
+
+1. In RFQ header, click **Create PO from Winner**
+2. System calls `button_confirm()` to confirm the PO
+3. RFQ becomes a confirmed **Purchase Order**
+
+View confirmed PO with:
+- Vendor: Tech Supplies Ltd
+- Lines with updated prices from winning bid
+- **Origin:** RFQ/00001
+- **Purchase Request:** PR/00003
+
+### Step 3.4: Verify Complete Workflow
+
+Open the newly created Purchase Order. Verify:
+- Vendor is Tech Supplies Ltd
+- Line prices reflect winning bid (UGX 4,200,000 for laptops, etc.)
+- Total matches selected bid: **UGX 14,496,000**
+- Origin links back to RFQ and Purchase Request
+
+![Purchase Order Created](screenshots/purchase_order.png)
+
+---
+
+## Complete Workflow Summary
+
+```
+Employee creates Purchase Request (PR/00001)
+          ↓
+Procurement approves request
+          ↓
+RFQ created with 3 vendors assigned (RFQ/00001)
+          ↓
+Vendors submit bids:
+  - Tech Supplies: UGX 14,496,000 ← WINNER
+  - Global Electronics: UGX 15,555,000
+  - Office Essentials: UGX 16,140,000
+          ↓
+Procurement selects Tech Supplies as winner
+          ↓
+Purchase Order created: UGX 14,496,000
+```
+
+---
+
 ## Install And Demo
 
 1. Start Odoo.
@@ -131,7 +362,7 @@ Implementation files:
 4. Click Update Apps List.
 5. Search for `Kola Purchase Procurement`.
 6. Install it.
-7. Go to Purchase > Orders > Purchase Requests.
+7. Go to **Purchase > Orders > Purchase Requests**.
 8. Create and approve a purchase request.
 9. Add suggested vendors and create the RFQ.
 10. Open the RFQ, confirm multiple assigned vendors, record bids, select a winner, and create the Purchase Order.
