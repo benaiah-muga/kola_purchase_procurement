@@ -34,7 +34,7 @@ Model relationships:
 
 Design choice:
 
-The RFQ already exists as `purchase.order`, so the clean Odoo approach is model inheritance with `_inherit = "purchase.order"`. A `Many2many` field is appropriate because one RFQ can have many vendors and one vendor can be invited to many RFQs.
+The RFQ already exists as `purchase.order`, so the clean Odoo approach I found is model inheritance with `_inherit = "purchase.order"`. A `Many2many` field is appropriate because one RFQ can have many vendors and one vendor can be invited to many RFQs.
 
 Implementation files:
 
@@ -61,7 +61,7 @@ Model relationships:
 
 Design choice:
 
-Bids are separate business records, not just email messages or notes. A custom bid model is therefore appropriate and easy to demo. It keeps all supplier responses connected to the RFQ while preserving Odoo's standard Purchase app behavior.
+Bids are separate business records, not just email messages or notes. A custom bid model is therefore appropriate. It keeps all supplier responses connected to the RFQ while preserving Odoo's standard Purchase app behavior.
 
 Implementation files:
 
@@ -85,7 +85,7 @@ Model relationships:
 
 Design choice:
 
-Odoo already converts RFQs to Purchase Orders through `button_confirm`. The module reuses that standard method through `action_create_po_from_winner` instead of creating a parallel PO process. This is easier to explain and safer because standard Odoo validations still run.
+Odoo already converts RFQs to Purchase Orders through `button_confirm`. The module reuses that standard method through `action_create_po_from_winner` instead of creating a parallel PO process. This is easier and safer because standard Odoo validations still run.
 
 Implementation files:
 
