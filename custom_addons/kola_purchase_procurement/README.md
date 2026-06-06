@@ -176,9 +176,9 @@ Implementation files:
 <img width="1250" height="1010" alt="purchase request" src="https://github.com/user-attachments/assets/91f0c7d3-0129-441f-97e4-1696adbec382" />
 
 
-### Step 4.2: Approve Request (as Procurement Manager)
+### Step 4.2: Approve Request
 
-1. Open the submitted request PR/00001
+1. Open the submitted request PR/00002
 2. Click **Approve** → Status changes to "Approved"
 3. **Create RFQ** button becomes visible
 
