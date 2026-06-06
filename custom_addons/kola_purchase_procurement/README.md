@@ -341,14 +341,14 @@ Open the newly created Purchase Order. Verify:
 
 ---
 
-## Complete Workflow Summary
+## Nut Shell
 
 ```
-Employee creates Purchase Request (PR/00001)
+Employee creates Purchase Request 
           ↓
 Procurement approves request
           ↓
-RFQ created with 3 vendors assigned (RFQ/00001)
+RFQ created with 3 vendors assigned 
           ↓
 Vendors submit bids:
   - Tech Supplies: UGX 14,496,000 ← WINNER
