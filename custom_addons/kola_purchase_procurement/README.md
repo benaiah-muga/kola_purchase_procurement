@@ -227,11 +227,11 @@ Odoo automatically sends the RFQ to all assigned vendors via email.
 
 ### Step 2.1: Create Bid for Tech Supplies Ltd
 
-1. Open **RFQ/00001**
+1. Open the **RFQ**
 2. Go to **Supplier Bids** tab
 3. Click **Create Supplier Bid**
 4. Form opens:
-   - **RFQ:** RFQ/00001 (pre-filled)
+   - **RFQ:(pre-filled)
    - **Vendor:** Tech Supplies Ltd
    - **Bid Date:** 2026-06-05
    - **Valid Until:** 2026-06-12
@@ -279,7 +279,7 @@ Click **Submit Bid** → Status: "Submitted"
 
 ### Step 2.4: View All Bids
 
-From **RFQ/00002**, go to **Supplier Bids** tab. View all 3 bids with states:
+From the **RFQ**, go to **Supplier Bids** tab. View all 3 bids with states:
 
 - Tech Supplies Ltd: **Submitted** - UGX 14,496,000
 - Global Electronics Inc: **Draft** - UGX 15,555,000
@@ -296,7 +296,7 @@ From **RFQ/00002**, go to **Supplier Bids** tab. View all 3 bids with states:
 
 ### Step 3.1: Compare Bids
 
-Open **RFQ/00002** → **Supplier Bids** tab. Review bid totals:
+Open the **RFQ** → **Supplier Bids** tab. Review bid totals:
 
 - Tech Supplies: UGX 14,496,000 (lowest)
 - Global Electronics: UGX 15,555,000
