@@ -203,11 +203,11 @@ Implementation files:
 ### Step 1.1: View RFQ with Multiple Vendors
 
 1. Go to **Purchase > Orders > Purchase Orders**
-2. Open **RFQ/00001** (created from PR/00003)
+2. Open the **RFQ**
 3. In the form, verify:
    - **Assigned Vendors** field shows: Tech Supplies Ltd, Global Electronics Inc, Office Essentials Co
    - **Primary Vendor** (partner_id): Tech Supplies Ltd (first suggested vendor)
-   - **Origin** field shows: PR/00003 (linked request)
+   - **Origin** field shows: PR/00002 (linked request)
 
 <img width="1412" height="1010" alt="createdrfq_from Request_assignedtomultiplevendors" src="https://github.com/user-attachments/assets/f1512fa3-9e43-435f-bc75-d1bec829b1cd" />
 
