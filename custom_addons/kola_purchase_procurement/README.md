@@ -279,7 +279,7 @@ Click **Submit Bid** → Status: "Submitted"
 
 ### Step 2.4: View All Bids
 
-From **RFQ/00001**, go to **Supplier Bids** tab. View all 3 bids with states:
+From **RFQ/00002**, go to **Supplier Bids** tab. View all 3 bids with states:
 
 - Tech Supplies Ltd: **Submitted** - UGX 14,496,000
 - Global Electronics Inc: **Draft** - UGX 15,555,000
@@ -296,7 +296,7 @@ From **RFQ/00001**, go to **Supplier Bids** tab. View all 3 bids with states:
 
 ### Step 3.1: Compare Bids
 
-Open **RFQ/00001** → **Supplier Bids** tab. Review bid totals:
+Open **RFQ/00002** → **Supplier Bids** tab. Review bid totals:
 
 - Tech Supplies: UGX 14,496,000 (lowest)
 - Global Electronics: UGX 15,555,000
@@ -325,8 +325,8 @@ Open **RFQ/00001** → **Supplier Bids** tab. Review bid totals:
 View confirmed PO with:
 - Vendor: Tech Supplies Ltd
 - Lines with updated prices from winning bid
-- **Origin:** RFQ/00001
-- **Purchase Request:** PR/00003
+- **Origin:** RFQ/00002
+- **Purchase Request:** PR/00002
 
 ### Step 3.4: Verify Complete Workflow
 
