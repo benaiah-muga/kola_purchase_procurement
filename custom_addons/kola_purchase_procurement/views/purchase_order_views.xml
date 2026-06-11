@@ -84,9 +84,11 @@
                         class="oe_highlight"
                         invisible="state not in ('draft', 'sent') or not winning_bid_id"/>
             </xpath>
-            <xpath expr="//field[@name='partner_id']" position="after">
+            <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name="partner_id" invisible="1"/>
                 <field name="vendor_ids"
                        widget="many2many_tags"
+                       string="Vendor"
                        placeholder="Select invited vendors"
                        readonly="state in ['cancel', 'purchase']"/>
                 <field name="winning_bid_id" readonly="1"/>

@@ -1,4 +1,4 @@
-from odoo import fields, models, _
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
         "purchase_order_vendor_rel",
         "order_id",
         "partner_id",
-        string="Assigned Vendors",
+        string="Vendors",
         domain="[('supplier_rank', '>', 0), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         help="Vendors invited to submit bids for this RFQ.",
     )
@@ -33,6 +33,56 @@ class PurchaseOrder(models.Model):
         copy=False,
         readonly=True,
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get("partner_id") and vals.get("vendor_ids"):
+                first_vendor_id = self._get_first_vendor_id_from_commands(vals["vendor_ids"])
+                if first_vendor_id:
+                    vals["partner_id"] = first_vendor_id
+
+        orders = super().create(vals_list)
+        orders._sync_vendor_ids_with_partner()
+        return orders
+
+    def write(self, vals):
+        result = super().write(vals)
+        if not self.env.context.get("skip_vendor_partner_sync"):
+            if "vendor_ids" in vals:
+                for order in self:
+                    if order.vendor_ids and order.partner_id not in order.vendor_ids:
+                        order.with_context(skip_vendor_partner_sync=True).partner_id = order.vendor_ids[:1]
+            if "partner_id" in vals:
+                self._sync_vendor_ids_with_partner()
+        return result
+
+    @api.onchange("vendor_ids")
+    def _onchange_vendor_ids(self):
+        for order in self:
+            if order.vendor_ids and order.partner_id not in order.vendor_ids:
+                order.partner_id = order.vendor_ids[:1]
+
+    @api.onchange("partner_id")
+    def _onchange_partner_id_sync_vendor_ids(self):
+        for order in self:
+            if order.partner_id and order.partner_id not in order.vendor_ids:
+                order.vendor_ids = [(4, order.partner_id.id)]
+
+    @api.model
+    def _get_first_vendor_id_from_commands(self, commands):
+        for command in commands:
+            if isinstance(command, (list, tuple)):
+                if command[0] == 6 and command[2]:
+                    return command[2][0]
+                if command[0] == 4:
+                    return command[1]
+        return False
+
+    def _sync_vendor_ids_with_partner(self):
+        for order in self:
+            if order.partner_id and order.partner_id not in order.vendor_ids:
+                order.with_context(skip_vendor_partner_sync=True).vendor_ids = [(4, order.partner_id.id)]
 
     def _compute_bid_count(self):
         for order in self:

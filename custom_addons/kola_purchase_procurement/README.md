@@ -30,11 +30,11 @@ Odoo models involved:
 Model relationships:
 
 - `purchase.order.vendor_ids` is a `Many2many` relationship to `res.partner`.
-- The existing `purchase.order.partner_id` remains in place because Odoo requires a primary vendor for standard RFQ and PO behavior.
+- The existing `purchase.order.partner_id` remains in place behind the scenes because Odoo requires one primary vendor for standard RFQ and PO behavior.
 
 Design choice:
 
-The RFQ already exists as `purchase.order`, so the clean Odoo approach I found is model inheritance with `_inherit = "purchase.order"`. A `Many2many` field is appropriate because one RFQ can have many vendors and one vendor can be invited to many RFQs.
+The RFQ already exists as `purchase.order`, so the clean Odoo approach I found is model inheritance with `_inherit = "purchase.order"`. A `Many2many` field is appropriate because one RFQ can have many vendors and one vendor can be invited to many RFQs. The form replaces the visible single-vendor textbox with one multi-vendor textbox labeled **Vendor**, while backend logic keeps Odoo's required `partner_id` synchronized with the first selected vendor.
 
 Implementation files:
 
@@ -205,8 +205,9 @@ Implementation files:
 1. Go to **Purchase > Orders > Purchase Orders**
 2. Open the **RFQ**
 3. In the form, verify:
-   - **Assigned Vendors** field shows: Tech Supplies Ltd, Global Electronics Inc, Office Essentials Co
-   - **Primary Vendor** (partner_id): Tech Supplies Ltd (first suggested vendor)
+   - **Vendor** field is one multi-selection textbox
+   - **Vendor** field shows: Tech Supplies Ltd, Global Electronics Inc, Office Essentials Co
+   - The hidden primary vendor (`partner_id`) is automatically synchronized to the first selected vendor for Odoo's standard workflow
    - **Origin** field shows: PR/00002 (linked request)
 
 <img width="1412" height="1010" alt="createdrfq_from Request_assignedtomultiplevendors" src="https://github.com/user-attachments/assets/f1512fa3-9e43-435f-bc75-d1bec829b1cd" />
