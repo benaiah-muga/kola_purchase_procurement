@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Bid list / form -->
     <record id="view_purchase_rfq_bid_list" model="ir.ui.view">
         <field name="name">purchase.rfq.bid.list</field>
         <field name="model">purchase.rfq.bid</field>
@@ -11,6 +12,7 @@
                 <field name="bid_date"/>
                 <field name="validity_date"/>
                 <field name="amount_total"/>
+                <field name="awarded_amount"/>
                 <field name="state" widget="badge"/>
             </list>
         </field>
@@ -24,7 +26,9 @@
                 <header>
                     <button name="action_copy_rfq_lines" type="object" string="Copy RFQ Lines" invisible="state != 'draft'"/>
                     <button name="action_submit" type="object" string="Submit Bid" class="oe_highlight" invisible="state != 'draft'"/>
-                    <button name="action_select_winner" type="object" string="Select Winner" class="oe_highlight" invisible="state not in ('draft', 'submitted')"/>
+                    <button name="action_select_winner" type="object" string="Award Whole Bid" class="oe_highlight"
+                            invisible="state in ('won', 'lost') or not line_ids"/>
+                    <button name="action_set_to_draft" type="object" string="Set to Draft" invisible="state not in ('submitted', 'lost')"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,won"/>
                 </header>
                 <sheet>
@@ -32,6 +36,10 @@
                         <h1>
                             <field name="name"/>
                         </h1>
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="state not in ('draft', 'submitted')">
+                        Record the vendor's prices below, then tick <strong>Awarded</strong> on each line you want to buy from this vendor.
+                        You can award different lines to different vendors — the RFQ will produce one purchase order per winning vendor.
                     </div>
                     <group>
                         <group>
@@ -49,17 +57,19 @@
                     <notebook>
                         <page string="Bid Lines" name="bid_lines">
                             <field name="line_ids" readonly="state in ('won', 'lost')">
-                                <list editable="bottom">
+                                <list editable="bottom" decoration-success="is_awarded">
                                     <field name="product_id"/>
                                     <field name="name"/>
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
                                     <field name="price_subtotal"/>
+                                    <field name="is_awarded" widget="boolean_toggle"/>
                                 </list>
                             </field>
                             <group class="oe_subtotal_footer">
                                 <field name="amount_total"/>
+                                <field name="awarded_amount"/>
                             </group>
                         </page>
                         <page string="Notes" name="notes">
@@ -72,52 +82,112 @@
         </field>
     </record>
 
+    <record id="action_purchase_rfq_bid" model="ir.actions.act_window">
+        <field name="name">Supplier Bids</field>
+        <field name="res_model">purchase.rfq.bid</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Purchase order (RFQ) form inheritance -->
     <record id="view_purchase_order_form_inherit_kola_procurement" model="ir.ui.view">
         <field name="name">purchase.order.form.kola.procurement</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header/button[@name='button_confirm'][@id='draft_confirm']" position="before">
-                <button name="action_create_po_from_winner"
-                        type="object"
-                        string="Create PO from Winner"
-                        class="oe_highlight"
-                        invisible="state not in ('draft', 'sent') or not winning_bid_id"/>
+            <!-- Hide Odoo's own "Confirm Order" buttons while this document is an
+                 RFQ / in bidding. The real purchase order is created by finalizing
+                 bidding, not by confirming the RFQ directly. -->
+            <xpath expr="//header/button[@name='button_confirm'][@id='draft_confirm']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//header/button[@name='button_confirm'][@id='bid_confirm']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">draft,bidding,done_bidding,purchase</attribute>
+            </xpath>
+
+            <!-- Finalize Bidding: the only way to create the PO(s). Visible only
+                 once at least one bid line has been awarded. -->
+            <xpath expr="//header/button[@name='button_confirm'][@id='draft_confirm']" position="before">
+                <button name="action_finalize_bidding"
+                        type="object"
+                        string="Finalize Bidding &amp; Create PO(s)"
+                        class="oe_highlight"
+                        data-hotkey="q"
+                        invisible="state != 'bidding' or awarded_line_count == 0"/>
+            </xpath>
+
+            <!-- Stage guidance banners so non-technical users know what to do next. -->
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-info o_procurement_hint" role="alert" invisible="state != 'draft'">
+                    This is an <strong>RFQ</strong>. Add the invited vendors, then click <strong>Send RFQ</strong> by email to open bidding.
+                </div>
+                <div class="alert alert-info o_procurement_hint" role="alert" invisible="state != 'bidding'">
+                    <strong>Bidding is open.</strong> Create a bid for each vendor in the Supplier Bids tab, then tick
+                    <strong>Awarded</strong> on the winning lines. When ready, click <strong>Finalize Bidding &amp; Create PO(s)</strong>
+                    — one purchase order is created per winning vendor.
+                    <span invisible="awarded_line_count != 0" class="fw-bold d-block">No lines awarded yet — award at least one bid line to enable finalizing.</span>
+                </div>
+                <div class="alert alert-success o_procurement_hint" role="alert" invisible="state != 'done_bidding'">
+                    Bidding is finalized. <field name="generated_po_count" class="fw-bold d-inline"/> purchase order(s) were created.
+                </div>
+            </xpath>
+
+            <!-- Replace the single-vendor field with the multi-vendor one. -->
             <xpath expr="//field[@name='partner_id']" position="replace">
                 <field name="partner_id" invisible="1"/>
                 <field name="vendor_ids"
                        widget="many2many_tags"
-                       string="Vendor"
+                       string="Vendors"
                        placeholder="Select invited vendors"
-                       readonly="state in ['cancel', 'purchase']"/>
-                <field name="winning_bid_id" readonly="1"/>
+                       readonly="state in ('cancel', 'purchase', 'done_bidding')"/>
+                <field name="winning_bid_id" readonly="1" invisible="1"/>
             </xpath>
+
             <xpath expr="//field[@name='origin']" position="after">
                 <field name="purchase_request_id"/>
+                <field name="bidding_source_id" readonly="1" invisible="1"/>
             </xpath>
+
+            <!-- Stat button to jump to the POs generated from this RFQ. -->
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_view_generated_pos"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-files-o"
+                        invisible="state != 'done_bidding'">
+                    <field name="generated_po_count" widget="statinfo" string="Created POs"/>
+                </button>
+            </xpath>
+
+            <!-- Supplier Bids tab: only relevant during / after bidding. -->
             <xpath expr="//notebook/page[@name='products']" position="after">
-                <page string="Supplier Bids" name="supplier_bids">
+                <page string="Supplier Bids" name="supplier_bids" invisible="state in ('draft',) and not bid_ids">
                     <group>
                         <button name="action_create_bid"
                                 type="object"
                                 string="Create Supplier Bid"
                                 class="btn-primary"
-                                invisible="state not in ('draft', 'sent')"/>
+                                invisible="state != 'bidding'"/>
                         <field name="bid_count" invisible="1"/>
+                        <field name="awarded_line_count" invisible="1"/>
+                        <field name="winning_vendor_count" invisible="1"/>
                     </group>
                     <field name="bid_ids" context="{'default_order_id': id, 'default_currency_id': currency_id, 'default_company_id': company_id}">
-                        <list>
+                        <list decoration-success="state == 'won'" decoration-muted="state == 'lost'">
                             <field name="name"/>
                             <field name="vendor_id"/>
                             <field name="bid_date"/>
                             <field name="validity_date"/>
                             <field name="amount_total"/>
+                            <field name="awarded_amount"/>
                             <field name="state" widget="badge"/>
                             <button name="action_select_winner"
                                     type="object"
-                                    string="Select Winner"
-                                    invisible="state in ('won', 'lost')"/>
+                                    string="Award Whole Bid"
+                                    class="oe_highlight"
+                                    invisible="state in ('won', 'lost') or order_state != 'bidding'"/>
                         </list>
                     </field>
                 </page>

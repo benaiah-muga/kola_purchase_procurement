@@ -11,6 +11,7 @@
                 <field name="department_id"/>
                 <field name="request_date"/>
                 <field name="needed_date"/>
+                <field name="rejected_line_count" optional="hide"/>
                 <field name="state" widget="badge"/>
             </list>
         </field>
@@ -24,7 +25,11 @@
                 <header>
                     <button name="action_submit" type="object" string="Submit" class="oe_highlight" invisible="state != 'draft'"/>
                     <button name="action_approve" type="object" string="Approve" class="oe_highlight" groups="purchase.group_purchase_user" invisible="state != 'submitted'"/>
-                    <button name="action_reject" type="object" string="Reject" groups="purchase.group_purchase_user" invisible="state not in ('submitted', 'approved')"/>
+                    <button name="%(action_purchase_request_reject_wizard)d"
+                            type="action"
+                            string="Reject"
+                            groups="purchase.group_purchase_user"
+                            invisible="state not in ('submitted', 'approved')"/>
                     <button name="action_create_rfq" type="object" string="Create RFQ" class="oe_highlight" groups="purchase.group_purchase_user" invisible="state != 'approved'"/>
                     <button name="action_reset_to_draft" type="object" string="Reset to Draft" invisible="state not in ('submitted', 'rejected')"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,rfq_created"/>
@@ -47,6 +52,22 @@
                             <field name="name"/>
                         </h1>
                     </div>
+                    <!-- Stage hints so non-technical users always see what to do next -->
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        This request is a <strong>Draft</strong>. Add the products you need, then click <strong>Submit</strong> to send it for approval.
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="state != 'submitted'">
+                        This request is <strong>Submitted</strong> and waiting for Procurement to approve or reject it.
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="state != 'approved'">
+                        This request is <strong>Approved</strong>. Add at least one suggested vendor, then click <strong>Create RFQ</strong> to invite vendors to bid.
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="state != 'rejected'">
+                        This request was <strong>Rejected</strong>. Reason: <field name="rejection_reason" readonly="1" class="fw-bold"/>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="state != 'rfq_created'">
+                        An RFQ has been created from this request. Continue the workflow from the linked RFQ.
+                    </div>
                     <group>
                         <group>
                             <field name="requester_id"/>
@@ -64,12 +85,22 @@
                     <notebook>
                         <page string="Products" name="products">
                             <field name="line_ids" readonly="state not in ('draft', 'submitted')">
-                                <list editable="bottom">
+                                <list editable="bottom" decoration-danger="state == 'rejected'">
                                     <field name="product_id"/>
                                     <field name="description"/>
                                     <field name="quantity"/>
                                     <field name="product_uom_id"/>
                                     <field name="estimated_price"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="rejection_reason" optional="hide"/>
+                                    <button name="action_open_reject_wizard"
+                                            type="object"
+                                            string="Reject Line"
+                                            invisible="state == 'rejected'"/>
+                                    <button name="action_restore_line"
+                                            type="object"
+                                            string="Restore"
+                                            invisible="state != 'rejected'"/>
                                 </list>
                             </field>
                         </page>
@@ -79,6 +110,50 @@
                     </notebook>
                 </sheet>
                 <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- A dedicated line view so procurement can reject individual lines with a reason
+         from the list, using the row action menu. -->
+    <record id="view_purchase_request_line_list" model="ir.ui.view">
+        <field name="name">purchase.request.line.list</field>
+        <field name="model">purchase.request.line</field>
+        <field name="arch" type="xml">
+            <list string="Request Lines" decoration-danger="state == 'rejected'">
+                <field name="request_id"/>
+                <field name="product_id"/>
+                <field name="description"/>
+                <field name="quantity"/>
+                <field name="product_uom_id"/>
+                <field name="estimated_price"/>
+                <field name="state" widget="badge"/>
+                <field name="rejection_reason" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_purchase_request_line_form" model="ir.ui.view">
+        <field name="name">purchase.request.line.form</field>
+        <field name="model">purchase.request.line</field>
+        <field name="arch" type="xml">
+            <form string="Request Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="request_id"/>
+                            <field name="product_id"/>
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <field name="quantity"/>
+                            <field name="product_uom_id"/>
+                            <field name="estimated_price"/>
+                            <field name="state" widget="badge"/>
+                            <field name="rejection_reason" readonly="state == 'open'" placeholder="Reason for rejection (mandatory when rejecting)"/>
+                        </group>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -95,6 +170,7 @@
                 <filter name="my_requests" string="My Requests" domain="[('requester_id', '=', uid)]"/>
                 <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
                 <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <filter name="rejected" string="Rejected" domain="[('state', '=', 'rejected')]"/>
                 <group>
                     <filter name="group_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
                     <filter name="group_department" string="Department" domain="[]" context="{'group_by': 'department_id'}"/>

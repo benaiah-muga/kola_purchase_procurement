@@ -3,3 +3,5 @@ access_purchase_request_employee,purchase.request employee,model_purchase_reques
 access_purchase_request_line_employee,purchase.request.line employee,model_purchase_request_line,base.group_user,1,1,1,1
 access_purchase_rfq_bid_user,purchase.rfq.bid user,model_purchase_rfq_bid,purchase.group_purchase_user,1,1,1,1
 access_purchase_rfq_bid_line_user,purchase.rfq.bid.line user,model_purchase_rfq_bid_line,purchase.group_purchase_user,1,1,1,1
+access_purchase_request_reject_wizard_user,purchase.request.reject.wizard user,model_purchase_request_reject_wizard,base.group_user,1,1,1,1
+access_purchase_request_line_reject_wizard_user,purchase.request.line.reject.wizard user,model_purchase_request_line_reject_wizard,base.group_user,1,1,1,1
