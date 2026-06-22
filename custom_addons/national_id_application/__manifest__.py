@@ -15,7 +15,6 @@
         'security/security_groups.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
-        'data/test_user_data.xml',
         'views/id_application_views.xml',
         'views/website_form_templates.xml',
         'views/portal_templates.xml',
