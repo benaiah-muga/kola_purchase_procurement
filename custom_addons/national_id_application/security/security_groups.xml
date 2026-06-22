@@ -27,6 +27,15 @@
         </record>
         
         <!-- Record Rules -->
+        <!-- Internal users (admins, staff, officers, managers) see ALL applications -->
+        <record id="national_id_application_internal_rule" model="ir.rule">
+            <field name="name">All Applications (Internal Users)</field>
+            <field ref="model_national_id_application" name="model_id"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[Command.link(ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Portal / public users only see their OWN applications -->
         <record id="national_id_application_personal_rule" model="ir.rule">
             <field name="name">Personal Applications</field>
             <field ref="model_national_id_application" name="model_id"/>
@@ -34,6 +43,7 @@
             <field name="groups" eval="[Command.link(ref('base.group_portal')), Command.link(ref('base.group_public'))]"/>
         </record>
 
+        <!-- Officers explicitly see all (in addition to the internal rule) -->
         <record id="national_id_application_officer_rule" model="ir.rule">
             <field name="name">All Applications (Officer)</field>
             <field ref="model_national_id_application" name="model_id"/>

@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from markupsafe import Markup
 
 class NationalIdApplication(models.Model):
     _name = 'national.id.application'
@@ -42,14 +43,40 @@ class NationalIdApplication(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('national.id.application') or _('New')
         return super().create(vals_list)
 
+    def _log_state_change(self, action_label):
+        """Post an audit message in the chatter naming the user who acted.
+
+        mail.thread field tracking alone is unreliable for programmatic state
+        changes (e.g. buttons calling action_* methods), so each action posts
+        an explicit message to guarantee the approving user and action are
+        recorded for audit.
+        """
+        user = self.env.user.name
+        for app in self:
+            app.message_post(
+                body=Markup(
+                    '<b>{action}</b> by <b>{user}</b>.<br/>'
+                    'Application <b>{ref}</b> is now <b>{state}</b>.'
+                ).format(
+                    action=action_label,
+                    user=user,
+                    ref=app.name,
+                    state=dict(self._fields['state'].selection).get(app.state, app.state),
+                ),
+            )
+
     def action_submit(self):
         self.write({'state': 'submitted'})
-        
+        self._log_state_change(_('Application Submitted'))
+
     def action_review(self):
         self.write({'state': 'under_review'})
-        
+        self._log_state_change(_('Moved to Review'))
+
     def action_approve(self):
         self.write({'state': 'approved'})
-        
+        self._log_state_change(_('Application Approved'))
+
     def action_reject(self):
         self.write({'state': 'rejected'})
+        self._log_state_change(_('Application Rejected'))
