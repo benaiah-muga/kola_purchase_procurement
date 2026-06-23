@@ -8,9 +8,9 @@
                 <form string="National ID Application">
                     <header>
                         <button name="action_submit" type="object" string="Submit" invisible="state != 'draft'" class="oe_highlight"/>
-                        <button name="action_review" type="object" string="Review" invisible="state != 'submitted'" class="oe_highlight" groups="national_id_application.group_national_id_officer"/>
-                        <button name="action_approve" type="object" string="Approve" invisible="state != 'under_review'" class="oe_highlight" groups="national_id_application.group_national_id_manager"/>
-                        <button name="action_reject" type="object" string="Reject" invisible="state not in ('submitted', 'under_review')" groups="national_id_application.group_national_id_officer"/>
+                        <button name="action_review" type="object" string="Review" invisible="state != 'submitted'" class="oe_highlight"/>
+                        <button name="action_approve" type="object" string="Approve" invisible="state != 'under_review'" class="oe_highlight"/>
+                        <button name="action_reject" type="object" string="Reject" invisible="state not in ('submitted', 'under_review')"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,submitted,under_review,approved,rejected"/>
                     </header>
                     <sheet>
