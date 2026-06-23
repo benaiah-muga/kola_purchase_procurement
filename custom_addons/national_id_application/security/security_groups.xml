@@ -25,6 +25,13 @@
             <field name="implied_ids" eval="[Command.link(ref('group_national_id_officer'))]"/>
             <field name="comment">The user will have full access to applications.</field>
         </record>
+
+        <record id="base.user_admin" model="res.users">
+            <field name="groups_id" eval="[Command.link(ref('group_national_id_manager'))]"/>
+        </record>
+        <record id="base.user_root" model="res.users">
+            <field name="groups_id" eval="[Command.link(ref('group_national_id_manager'))]"/>
+        </record>
         
         <!-- Record Rules -->
         <!-- Internal users (admins, staff, officers, managers) see ALL applications -->
