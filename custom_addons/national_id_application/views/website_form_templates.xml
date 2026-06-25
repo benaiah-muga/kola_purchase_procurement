@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ===================== HOMEPAGE ===================== -->
+        <template id="homepage_template" name="National ID Portal Home">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <!-- Hero -->
+                    <section class="s_hero pt96 pb96 o_colored_level" style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);">
+                        <div class="container text-white text-center">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8">
+                                    <span class="badge bg-light text-primary mb-3 fs-6">Online Services Portal</span>
+                                    <h1 class="display-4 fw-bold mb-3">National ID Application</h1>
+                                    <p class="lead mb-4 opacity-75">
+                                        Apply for your National Identification Card online.
+                                        Submit your application, upload your documents, and track
+                                        its progress — all in one place.
+                                    </p>
+                                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                        <a href="/id_application" class="btn btn-light btn-lg px-4">
+                                            <i class="fa fa-pencil-square-o me-2"/>Start Application
+                                        </a>
+                                        <a href="/my/id_applications" class="btn btn-outline-light btn-lg px-4">
+                                            <i class="fa fa-search me-2"/>Track Application
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Steps -->
+                    <section class="py-5 bg-light">
+                        <div class="container">
+                            <div class="text-center mb-5">
+                                <h2 class="fw-bold">How It Works</h2>
+                                <p class="text-muted">Three simple steps to get your National ID</p>
+                            </div>
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm text-center p-4">
+                                        <div class="card-body">
+                                            <div class="display-6 text-primary mb-3">
+                                                <i class="fa fa-file-text-o"/>
+                                            </div>
+                                            <h4>1. Fill the Form</h4>
+                                            <p class="text-muted">Complete the online application with your personal details.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm text-center p-4">
+                                        <div class="card-body">
+                                            <div class="display-6 text-primary mb-3">
+                                                <i class="fa fa-upload"/>
+                                            </div>
+                                            <h4>2. Upload Documents</h4>
+                                            <p class="text-muted">Attach your passport photo and LC recommendation letter.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card h-100 border-0 shadow-sm text-center p-4">
+                                        <div class="card-body">
+                                            <div class="display-6 text-primary mb-3">
+                                                <i class="fa fa-check-square-o"/>
+                                            </div>
+                                            <h4>3. Track Progress</h4>
+                                            <p class="text-muted">Use your reference number to track your application status online.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- CTA -->
+                    <section class="py-5">
+                        <div class="container">
+                            <div class="card border-0 shadow text-white text-center p-5" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);">
+                                <div class="card-body">
+                                    <h3 class="mb-3">Ready to Apply?</h3>
+                                    <p class="mb-4 opacity-75">The application takes about 5 minutes. Make sure you have your photo and LC letter ready.</p>
+                                    <a href="/id_application" class="btn btn-light btn-lg px-5">
+                                        <i class="fa fa-arrow-right me-2"/>Begin Application
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- ===================== APPLICATION FORM ===================== -->
+        <template id="application_form_template" name="National ID Application Form">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_website_form pt64 pb64 bg-light" data-vcss="001" data-snippet="s_website_form">
+                        <div class="container">
+                            <div class="row align-items-center justify-content-center">
+                                <div class="col-lg-8">
+                                    <div class="card shadow-sm border-0 rounded-3">
+                                        <div class="card-header bg-primary text-white p-4">
+                                            <h2 class="mb-0 text-center">National ID Application</h2>
+                                            <p class="text-center mt-2 mb-0">Please fill out the form below to apply for your National ID.</p>
+                                        </div>
+                                        <div class="card-body p-5">
+                                            <!-- Validation errors -->
+                                            <div t-if="errors" class="alert alert-danger" role="alert">
+                                                <p class="mb-1 fw-bold"><i class="fa fa-exclamation-triangle me-2"/>Please fix the following:</p>
+                                                <ul class="mb-0">
+                                                    <li t-foreach="errors" t-as="err" t-key="err_index">
+                                                        <span t-esc="err"/>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <form action="/id_application/submit" method="post" enctype="multipart/form-data" class="needs-validation">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                                <div class="row mb-4">
+                                                    <div class="col-md-6">
+                                                        <label for="applicant_name" class="form-label fw-bold">Full Name *</label>
+                                                        <input type="text" class="form-control" name="applicant_name" required="required" placeholder="e.g. John Doe" t-att-value="form.get('applicant_name') if form else ''"/>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="date_of_birth" class="form-label fw-bold">Date of Birth *</label>
+                                                        <input type="date" class="form-control" name="date_of_birth" required="required" t-att-value="form.get('date_of_birth') if form else ''"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row mb-4">
+                                                    <div class="col-md-6">
+                                                        <label for="gender" class="form-label fw-bold">Gender *</label>
+                                                        <select class="form-select" name="gender" required="required">
+                                                            <option value="" disabled="1" t-att-selected="not form or not form.get('gender')">Select Gender</option>
+                                                            <option value="male" t-att-selected="form and form.get('gender') == 'male'">Male</option>
+                                                            <option value="female" t-att-selected="form and form.get('gender') == 'female'">Female</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label for="phone" class="form-label fw-bold">Phone Number *</label>
+                                                        <input type="tel" class="form-control" name="phone" required="required" placeholder="e.g. +256..." t-att-value="form.get('phone') if form else ''"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label for="email" class="form-label fw-bold">Email Address *</label>
+                                                    <input type="email" class="form-control" name="email" required="required" placeholder="your@email.com" t-att-value="form.get('email') if form else ''"/>
+                                                </div>
+
+                                                <div class="mb-4">
+                                                    <label for="address" class="form-label fw-bold">Physical Address *</label>
+                                                    <textarea class="form-control" name="address" rows="3" required="required" placeholder="Your residential address..."><t t-if="form" t-esc="form.get('address')"/></textarea>
+                                                </div>
+
+                                                <hr class="my-4"/>
+                                                <h4 class="mb-3">Attachments</h4>
+
+                                                <div class="mb-4">
+                                                    <label for="photo" class="form-label fw-bold">Applicant Photo (Passport Size) *</label>
+                                                    <input type="file" class="form-control" name="photo" accept="image/*" required="required"/>
+                                                    <div class="form-text">Please upload a clear, recent passport-sized photograph.</div>
+                                                </div>
+
+                                                <div class="mb-5">
+                                                    <label for="lc_letter" class="form-label fw-bold">LC Reference Letter *</label>
+                                                    <input type="file" class="form-control" name="lc_letter" accept=".pdf,.doc,.docx,.jpg,.png" required="required"/>
+                                                    <div class="form-text">Attach a scanned copy of your Local Council (LC) recommendation letter.</div>
+                                                </div>
+
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-primary btn-lg py-3">Submit Application</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <template id="application_thank_you" name="Application Submitted">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="pt64 pb64 text-center">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-6">
+                                    <div class="card shadow-sm border-0 py-5">
+                                        <div class="card-body">
+                                            <i class="fa fa-check-circle text-success" style="font-size: 80px;"></i>
+                                            <h2 class="mt-4 mb-3">Application Submitted Successfully!</h2>
+                                            <p class="lead text-muted mb-4">
+                                                Thank you for your application. Your reference number is:
+                                                <br/>
+                                                <strong class="text-primary" style="font-size: 1.5rem;"><t t-esc="application_ref"/></strong>
+                                            </p>
+                                            <p>You can use this reference to track the status of your application.</p>
+                                            <a href="/" class="btn btn-outline-primary mt-3">Return to Homepage</a>
+                                            <a t-if="request.env.user.id != request.env.ref('base.public_user').id" href="/my/id_applications" class="btn btn-primary mt-3 ms-2">Go to My Portal</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="portal_my_home_menu_id_application" name="Portal layout : ID Application menu entry" inherit_id="portal.portal_breadcrumbs" priority="20">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'id_application' or application" t-attf-class="breadcrumb-item #{'active ' if not application else ''}">
+                    <a t-if="application" t-attf-href="/my/id_applications?{{ keep_query() }}">National ID Applications</a>
+                    <t t-else="">National ID Applications</t>
+                </li>
+                <li t-if="application" class="breadcrumb-item active">
+                    <t t-esc="application.name"/>
+                </li>
+            </xpath>
+        </template>
+
+        <template id="portal_my_home_id_application" name="Show ID Applications" inherit_id="portal.portal_my_home" priority="20">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">National ID Applications</t>
+                    <t t-set="url" t-value="'/my/id_applications'"/>
+                    <t t-set="placeholder_count" t-value="'id_application_count'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="portal_my_id_applications" name="My ID Applications">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">ID Applications</t>
+                </t>
+                <t t-if="not applications">
+                    <p class="alert alert-warning mt8">There are currently no ID applications for your account.</p>
+                </t>
+                <t t-if="applications" t-call="portal.portal_table">
+                    <thead>
+                        <tr class="active">
+                            <th>Reference #</th>
+                            <th>Applicant Name</th>
+                            <th>Application Date</th>
+                            <th class="text-end">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="applications" t-as="app">
+                            <tr>
+                                <td>
+                                    <a t-attf-href="/my/id_application/#{app.id}">
+                                        <t t-esc="app.name"/>
+                                    </a>
+                                </td>
+                                <td><span t-field="app.applicant_name"/></td>
+                                <td><span t-field="app.create_date" t-options="{'widget': 'date'}"/></td>
+                                <td class="text-end">
+                                    <span t-attf-class="badge rounded-pill #{'bg-info' if app.state == 'submitted' else 'bg-warning' if app.state == 'under_review' else 'bg-success' if app.state == 'approved' else 'bg-danger' if app.state == 'rejected' else 'bg-secondary'}">
+                                        <span t-field="app.state"/>
+                                    </span>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </t>
+            </t>
+        </template>
+
+        <template id="portal_id_application_page" name="ID Application">
+            <t t-call="portal.portal_layout">
+                <t t-set="o_portal_fullwidth_alert" groups="national_id_application.group_national_id_officer">
+                    <t t-call="portal.portal_back_in_edit_mode">
+                        <t t-set="backend_url" t-value="'/web#model=national.id.application&amp;id=%s&amp;view_type=form' % (application.id)"/>
+                    </t>
+                </t>
+
+                <div id="optional_layout">
+                    <div class="card mt-4 mb-4">
+                        <div class="card-header bg-white pb-3 pt-3">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <h4 class="mb-0">
+                                        Application <span t-esc="application.name"/>
+                                    </h4>
+                                </div>
+                                <div class="col-lg-6 text-end">
+                                    <span t-attf-class="badge fs-6 rounded-pill #{'bg-info' if application.state == 'submitted' else 'bg-warning' if application.state == 'under_review' else 'bg-success' if application.state == 'approved' else 'bg-danger' if application.state == 'rejected' else 'bg-secondary'}">
+                                        <span t-field="application.state"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong>Applicant Name:</strong> <span t-field="application.applicant_name"/>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Application Date:</strong> <span t-field="application.create_date" t-options="{'widget': 'date'}"/>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Gender:</strong> <span t-field="application.gender"/>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong>Date of Birth:</strong> <span t-field="application.date_of_birth"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="o_portal_messages_container mt32">
+                    <h4>Communication History</h4>
+                    <t t-call="portal.message_thread">
+                        <t t-set="object" t-value="application"/>
+                    </t>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
